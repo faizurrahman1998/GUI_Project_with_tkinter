@@ -3,7 +3,11 @@ import tkinter as tk
 
 class LoginPage(tk.Frame): 
 
-    def __init__(self, parent, main_app): 
+    def __init__(self, parent, main_page): 
+
+        #for recreating after destroying and using outside the namspace of __init__() if needed
+        self.main_page = main_page
+        self.parent = parent
         
         self.__bg = "#00FF96"
         self.__fg = "#f44336"
@@ -36,13 +40,13 @@ class LoginPage(tk.Frame):
 
 
         #submit button
-        self.button1 = tk.Button(
+        self.__button1 = tk.Button(
             self, bd = 4, text = "Submit", font = ("Skate Brand", 30), 
             bg =  self.__bg, fg = self.__fg, activebackground = "#4fc3f7", 
             command = self.post_checking,  relief = "groove"
         )
 
-        self.button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
+        self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
 
     def post_checking(self): 
 
@@ -52,4 +56,21 @@ class LoginPage(tk.Frame):
 
         else: 
 
-            messagebox.showinfo("welcome", self.__user_entry.get().split("@", 1)[0])
+            with open('username.txt') as file1: 
+
+                for line in file1.readlines(): 
+
+                    if self.__user_entry.get() == line.rstrip(): 
+
+                        messagebox.showinfo("welcome", self.__user_entry.get().split("@", 1)[0])
+                        self.destroy()
+                        self.__init__(self.parent, self.main_page)
+
+                        self.main_page.show_frame("info_page")
+                        break
+                
+                else: 
+
+                    messagebox.showwarning("Error", "Check Your Credentials!")
+                    self.__user_entry.delete(0, "end")
+                    self.__password_entry.delete(0, "end")

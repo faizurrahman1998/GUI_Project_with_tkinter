@@ -1,5 +1,6 @@
 import tkinter as tk 
 from PIL import ImageTk, Image
+from login_page import LoginPage
 
 class AppEngine(tk.Tk): 
 
@@ -13,20 +14,24 @@ class AppEngine(tk.Tk):
             "logo": self.ready_img("logo.png", (120, 130))
         }
 
-        interface = tk.Canvas(self, bg = "#2ecc71")
+        interface = tk.Canvas(self, bg = "#00FF66")
         interface.place(relwidth = 1, relheight = 1)
 
-        image = tk.Label(interface, image = self.images.get("logo"), bg = "#2ecc71", relief = "flat")
+        image = tk.Label(interface, image = self.images.get("logo"), bg = "#00FF66", relief = "flat")
         image.place(relx = 0.009, rely = 0.015)
 
         status_bar = tk.Label(
-            self, text = "MECHATRONICS", bg = "#2ecc71", 
+            interface, text = "MECHATRONICS", bg = "#00FF66", 
             relief = "flat", 
-            font = ("Skate Brand", 100),     
+            anchor = "n",
+            font = ("My Font", 100),     
         )
 
-        status_bar.place(relwidth = .8, relheight = .185, relx = .16, rely = .009)
-    
+        status_bar.place(relwidth = .8, relheight = .185, relx = .16, rely = 0.015) 
+
+        firstpage = LoginPage(interface, self)
+        firstpage.place(relwidth = 0.8, relheight = 0.7, relx = 0.1, rely = 0.2)
+
 
     def ready_img(self, path, size): 
 

@@ -52,4 +52,4 @@ class LoginPage(tk.Frame):
 
         else: 
 
-            pass
+            messagebox.showinfo("welcome", self.__user_entry.get().split("@", 1)[0])

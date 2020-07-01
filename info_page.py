@@ -1,6 +1,6 @@
 import tkinter as tk 
 
-class InfoPage(tk.Frame): 
+class InfoPage(tk.Canvas): 
 
     def __init__(self, parent, main_page): 
 
@@ -8,9 +8,7 @@ class InfoPage(tk.Frame):
         self.main_page = main_page
         self.parent = parent
 
-        super().__init__(parent, bg = "#58d68d", highlightbackground = "#f44336", highlightthickness = "2", relief = "flat")
-
-        
+        super().__init__(parent, bg = "#58d68d", highlightbackground = "#f44336", highlightthickness = "3", relief = "flat")
 
         self.button1 = tk.Button(self, text = "front_page", command = lambda: self.load_page("login_page"))
         self.button1.place(relx = 0.92, rely = 0.95)
@@ -22,4 +20,4 @@ class InfoPage(tk.Frame):
         self.destroy()
         self.__init__(self.parent, self.main_page)
 
-        self.main_page.show_frame(page_name)
+        self.main_page.show_canvas(page_name)

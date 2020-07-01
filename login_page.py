@@ -2,7 +2,7 @@ from tkinter import messagebox
 import tkinter as tk
 from encryption import Encryption
 
-class LoginPage(tk.Frame): 
+class LoginPage(tk.Canvas): 
 
     def __init__(self, parent, main_page): 
 
@@ -50,6 +50,7 @@ class LoginPage(tk.Frame):
 
         self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
 
+    
     def post_checking(self): 
 
         if (len(self.__user_entry.get()) == 0 or len(self.__password_entry.get()) == 0): 
@@ -69,7 +70,7 @@ class LoginPage(tk.Frame):
                     self.destroy()
                     self.__init__(self.parent, self.main_page)
 
-                    self.main_page.show_frame("info_page")
+                    self.main_page.show_canvas("info_page")
                 
                 else: 
 
@@ -79,5 +80,3 @@ class LoginPage(tk.Frame):
 
                 messagebox.showerror("Error!", "No user found.\nCheck user name.")
                 self.__password_entry.delete(0, "end")
-
-

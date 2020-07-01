@@ -10,10 +10,12 @@ class Encryption(Fernet):
         super().__init__(self.magic)
 
     def update_user(self):
-
-        pass 
+        pass
 
     def mod_decrypt(self): 
 
-        with open("credentials.encrypted", "rb"):
-            pass
+        with open("credentials.encrypted", "rb") as file1:
+
+            return json.loads(self.decrypt(file1.read()).decode())
+
+obj = Encryption()

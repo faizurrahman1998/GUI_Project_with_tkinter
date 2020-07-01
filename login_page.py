@@ -1,13 +1,15 @@
 from tkinter import messagebox
 import tkinter as tk
+from encryption import Encryption
 
 class LoginPage(tk.Frame): 
 
     def __init__(self, parent, main_page): 
 
         #for recreating after destroying and using outside the namspace of __init__() if needed
-        self.main_page = main_page
         self.parent = parent
+        self.main_page = main_page
+        
         
         self.__bg = "#00FF96"
         self.__fg = "#f44336"
@@ -54,23 +56,28 @@ class LoginPage(tk.Frame):
 
             messagebox.showerror("Error", "Username or Password is Empty!")
 
-        else: 
+        else:
 
-            with open('username.txt') as file1: 
+            self.checker = Encryption()
 
-                for line in file1.readlines(): 
+            if self.__user_entry.get().rstrip() in self.checker.mod_decrypt().keys(): 
 
-                    if self.__user_entry.get() == line.rstrip(): 
+                if self.__password_entry.get() == self.checker.mod_decrypt().get(self.__user_entry.get().rstrip()):
 
-                        messagebox.showinfo("welcome", self.__user_entry.get().split("@", 1)[0])
-                        self.destroy()
-                        self.__init__(self.parent, self.main_page)
+                    messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())
 
-                        self.main_page.show_frame("info_page")
-                        break
+                    self.destroy()
+                    self.__init__(self.parent, self.main_page)
+
+                    self.main_page.show_frame("info_page")
                 
                 else: 
 
-                    messagebox.showwarning("Error", "Check Your Credentials!")
-                    # self.__user_entry.delete(0, "end")
-                    self.__password_entry.delete(0, "end")
+                    messagebox.showerror("Error!", "Incorrect Password!\nCheck for white space at the end!!")
+                
+            else: 
+
+                messagebox.showerror("Error!", "No user found.\nCheck user name.")
+                self.__password_entry.delete(0, "end")
+
+

@@ -10,8 +10,10 @@ class InfoPage(tk.Frame):
 
         super().__init__(parent, bg = "#58d68d", highlightbackground = "#f44336", highlightthickness = "2", relief = "flat")
 
+        
+
         self.button1 = tk.Button(self, text = "front_page", command = lambda: self.load_page("login_page"))
-        self.button1.pack()
+        self.button1.place(relx = 0.92, rely = 0.95)
 
     
 

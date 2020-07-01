@@ -16,25 +16,25 @@ class LoginPage(tk.Frame):
 
         #user_name Label
         self.__labelUser = tk.Label(
-            self, text = "User Name:", font = ("Qualy", 20), bg = self.__bg, 
+            self, text = "User Name:", font = ("Qualy", 30), bg = self.__bg, 
             fg = self.__fg, relief = "flat"
         )
         self.__labelUser.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.2)
 
         #password_label
         self.__labelPassword = tk.Label(
-            self, text = "Password:", font = ("Qualy", 20), bg = self.__bg, 
+            self, text = "Password:", font = ("Qualy", 30), bg = self.__bg, 
             fg = self.__fg, relief = "flat"
         )
-        self.__labelPassword.place(relwidth = 0.19, relheight = 0.1, relx = 0.05, rely = 0.4)
+        self.__labelPassword.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.4)
 
         #user_entry_box
-        self.__user_entry = tk.Entry(self, bd = 0, font = ("comfortaa", 35), highlightcolor = "#f44336", highlightthickness = "2", relief = "flat")
+        self.__user_entry = tk.Entry(self, bd = 0, font = ("comfortaa", 30), highlightcolor = "#f44336", highlightthickness = "2", relief = "flat")
         self.__user_entry.place(relheight = .1, relwidth = .7, relx = 0.25, rely = 0.2)
 
         #password_enrty_box
         self.__password_entry = tk.Entry(
-            self, bd = 0, font = ("comfortaa", 35), highlightcolor = "#f44336", highlightthickness = "2", relief = "flat", show = "*"
+            self, bd = 0, font = ("comfortaa", 30), highlightcolor = "#f44336", highlightthickness = "2", relief = "flat", show = "*"
         )
         self.__password_entry.place(relheight = .1, relwidth = .7, relx = 0.25, rely = 0.4)
 
@@ -72,5 +72,5 @@ class LoginPage(tk.Frame):
                 else: 
 
                     messagebox.showwarning("Error", "Check Your Credentials!")
-                    self.__user_entry.delete(0, "end")
+                    # self.__user_entry.delete(0, "end")
                     self.__password_entry.delete(0, "end")

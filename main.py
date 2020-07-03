@@ -24,7 +24,7 @@ class AppEngine(tk.Tk):
         #all the sikns(frames)
         self.canvases = { 
             "login_page": LoginPage(self.interface, self), 
-            "info_page": InfoPage(self.interface, self)
+            "info_page": InfoPage(self.interface, self, "nilan_001")
         }
 
         #adding the logo
@@ -33,17 +33,16 @@ class AppEngine(tk.Tk):
 
         #adding the statusbar
         self.status_bar = tk.Label(
-            self.interface, text = "MECHATRONICS", bg = "#00FF66", 
-            relief = "flat", 
-            anchor = "n",
-            font = ("My Font", 100),     
+            self.interface, text = "MECHATRONICS", font = ("my font", 100),
+            bg = "#00FF66",             
+            relief = "flat", anchor = "n"                 
         )
         self.status_bar.place(relwidth = .8, relheight = .185, relx = .16, rely = 0.015) 
 
         # self.firstpage = LoginPage(self.interface, self)
         # self.firstpage.place(relwidth = 0.85, relheight = 0.7, relx = 0.075, rely = 0.2)
 
-        self.firstpage = InfoPage(self.interface, self)
+        self.firstpage = InfoPage(self.interface, self, "nilan_001")
         self.firstpage.place(relwidth = 1, relheight = 0.8,rely = 0.2)
 
 

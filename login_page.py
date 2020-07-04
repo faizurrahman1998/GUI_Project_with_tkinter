@@ -2,6 +2,7 @@ from tkinter import messagebox
 import tkinter as tk
 from encryption import Encryption
 from info_page import InfoPage
+import time
 
 class LoginPage(tk.Canvas): 
 
@@ -56,11 +57,12 @@ class LoginPage(tk.Canvas):
             bg =  self.__bg, fg = self.__fg, activebackground = "#4fc3f7", 
             command = self.post_checking,  relief = "groove"
         )
-
+        
+        self.__password_entry.bind("<Return>", self.post_checking)
         self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
 
-    
-    def post_checking(self): 
+
+    def post_checking(self, *kwargs): 
 
         if (len(self.__user_entry.get()) == 0 or len(self.__password_entry.get()) == 0): 
 
@@ -74,12 +76,13 @@ class LoginPage(tk.Canvas):
 
                 if self.__password_entry.get() == self.checker.mod_decrypt("credentials.encrypted").get(self.__user_entry.get().rstrip()):
 
-                    messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())
+                    messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())       
+
+                    self.main_page.canvases.update({"info_page": InfoPage(self.main_page.interface, self.main_page, self.__user_entry.get())})
 
                     self.destroy()
                     self.__init__(self.parent, self.main_page)
 
-                    self.main_page.canvases.update({"info_page": InfoPage(self.main_page.interface, self.main_page, self.__user_entry.get())})
                     self.main_page.show_canvas("info_page")
                 
                 else: 

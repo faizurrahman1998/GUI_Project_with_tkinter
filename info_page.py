@@ -11,25 +11,100 @@ class InfoPage(tk.Canvas):
         self.parent = parent
         self.user_name = user_name
 
-        super().__init__(parent, bg = "#58d68d", highlightbackground = "#f44336", highlightthickness = "3", relief = "flat")
+        self.__bg = "#58d68d"
+
+        super().__init__(parent, bg = self.__bg, highlightbackground = "#f44336", highlightthickness = "3", relief = "flat")
+
+        self.checker = Encryption()
 
         #image_path_reference 
         self.images = {
-            "user_image" : self.load_image(".//image_base//nilan_001.png")
+            "user_image" : self.load_image(self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("image"))
         }
 
         #for holding the user_image
         self.image_holder = tk.Label(
             self, image = self.images.get("user_image"),
-            bg = "#00FF66",
+            bg = self.__bg,
             relief = "flat"
         )
         self.image_holder.place(relwidth = 0.145, relheight = .25, relx = 0.852, rely = 0.009)
+
+
+        #for the top label
+        self.top_label = tk.Label(
+            self, text = "personal information", font = ("qualy", 35),
+            bg = self.__bg, 
+        )
+        self.top_label.place(relwidth = 0.4, relheight = 0.08, relx = .225, rely = 0.18)
+
         
+        self.name_label = tk.Label(
+            self, text = "Name", font = ("comfortaa", 30, "bold"), 
+            bg = self.__bg,
+        )
+        self.name_label.place(relwidth = 0.1, relheight = .06, relx = 0.063, rely = 0.35)
+
+        self.id_label = tk.Label(
+            self, text = "Id", font = ("comfortaa", 30, "bold"), 
+            bg = self.__bg,
+        )
+        self.id_label.place(relwidth = 0.1, relheight = 0.06, relx = 0.063, rely = 0.45)
+
+        self.email_label = tk.Label(
+            self, text = "Email", font = ("comfortaa", 30, "bold"), 
+            bg = self.__bg,
+        )
+        self.email_label.place(relwidth = 0.1, relheight = 0.06, relx = 0.063, rely = 0.55)
+
+
+
+        self.colon1 = tk.Label(
+            self, text = ":", font = ("comfortaa", 30, "bold"),
+            bg = self.__bg,
+        )
+        self.colon1.place(relheight = 0.06, relx = .17, rely = .35)
+
+        self.colon2 = tk.Label(
+            self, text = ":", font = ("comfortaa", 30, "bold"),
+            bg = self.__bg,
+        )
+        self.colon2.place(relheight = 0.06, relx = .17, rely = .45)
+
+        self.colon3 = tk.Label(
+            self, text = ":", font = ("comfortaa", 30, "bold"),
+            bg = self.__bg,
+        )
+        self.colon3.place(relheight = 0.06, relx = .17, rely = .55)
+
+
+
+        self.name_holder = tk.Label(
+            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("name"), font = ("comfortaa", 25), anchor = "w",
+            bg = self.__bg,
+        )
+        self.name_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.35)
+
+        self.id_holder = tk.Label(
+            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("id"), font = ("comfortaa", 25), anchor = "w",
+            bg = self.__bg,
+        )
+        self.id_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.45)
+
+        self.email_holder = tk.Label(
+            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("email"), font = ("comfortaa", 25), anchor = "w",
+            bg = self.__bg,
+        )
+        self.email_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.55)
+
+
+
+
+
         #logout button
         self.button1 = tk.Button(
             self, bd = 2, text = "Log_out", font = ("skate brand", 20),
-            bg = "#58d68d", fg = "#f44336", activebackground = "#f44336", 
+            bg = self.__bg, fg = "#f44336", activebackground = "#f44336", 
             command = lambda: self.load_page("login_page"), 
             relief = "groove"
         )

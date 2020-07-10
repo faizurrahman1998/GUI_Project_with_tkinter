@@ -10,6 +10,7 @@ class InfoPage(tk.Canvas):
         self.main_page = main_page
         self.parent = parent
         self.user_name = user_name
+        self.informations = self.main_page.connection.MechatronicsDB.Informations
 
         self.__bg = "#58d68d"
 
@@ -19,7 +20,7 @@ class InfoPage(tk.Canvas):
 
         #image_path_reference 
         self.images = {
-            "user_image" : self.load_image(self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("image"))
+            "user_image" : self.load_image(self.informations.find_one({"user_name" : self.user_name}).get("info").get("image"))
         }
 
         #for holding the user_image
@@ -80,19 +81,19 @@ class InfoPage(tk.Canvas):
 
 
         self.name_holder = tk.Label(
-            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("name"), font = ("comfortaa", 25), anchor = "w",
+            self, text = self.informations.find_one({"user_name" : self.user_name}).get("info").get("name"), font = ("comfortaa", 25), anchor = "w",
             bg = self.__bg,
         )
         self.name_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.35)
 
         self.id_holder = tk.Label(
-            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("id"), font = ("comfortaa", 25), anchor = "w",
+            self, text = self.informations.find_one({"user_name" : self.user_name}).get("info").get("ID"), font = ("comfortaa", 25), anchor = "w",
             bg = self.__bg,
         )
         self.id_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.45)
 
         self.email_holder = tk.Label(
-            self, text = self.checker.mod_decrypt("database.encrypted").get(self.user_name).get("email"), font = ("comfortaa", 25), anchor = "w",
+            self, text = self.informations.find_one({"user_name" : self.user_name}).get("info").get("email"), font = ("comfortaa", 25), anchor = "w",
             bg = self.__bg,
         )
         self.email_holder.place(relwidth = .5, relheight = 0.06, relx = .2, rely = 0.55)

@@ -1,11 +1,14 @@
 import tkinter as tk 
 from PIL import ImageTk, Image
+from encryption import Connection
 from login_page import LoginPage
 from info_page import InfoPage
 
 class AppEngine(tk.Tk): 
 
     def __init__(self): 
+
+        self.connection = Connection("mongodb://localhost:27017")
 
         super().__init__()
         self.title("MTE")
@@ -61,11 +64,7 @@ class AppEngine(tk.Tk):
         elif page_name == "login_page": 
             load.place(relwidth = 0.85, relheight = 0.7, relx = 0.075, rely = 0.2)
 
+if __name__ == "__main__":
 
-
-
-
-
-
-app = AppEngine()
-app.mainloop()
+    app = AppEngine()
+    app.mainloop()

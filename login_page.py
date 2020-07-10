@@ -11,6 +11,7 @@ class LoginPage(tk.Canvas):
         #for recreating after destroying and using outside the namspace of __init__() if needed
         self.parent = parent
         self.main_page = main_page
+        self.credentials = self.main_page.connection.MechatronicsDB.Credentials
         
         
         self.__bg = "#00FF96"
@@ -69,12 +70,11 @@ class LoginPage(tk.Canvas):
             messagebox.showerror("Error", "Username or Password is Empty!")
 
         else:
-
             self.checker = Encryption()
+            
+            if self.__user_entry.get().rstrip() == self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("user_name"): 
 
-            if self.__user_entry.get().rstrip() in self.checker.mod_decrypt("credentials.encrypted").keys(): 
-
-                if self.__password_entry.get() == self.checker.mod_decrypt("credentials.encrypted").get(self.__user_entry.get().rstrip()):
+                if self.__password_entry.get() == self.checker.decrypt(self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("password").encode()).decode():
 
                     messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())       
 
@@ -93,3 +93,6 @@ class LoginPage(tk.Canvas):
 
                 messagebox.showerror("Error!", "No user found.\nCheck user name.")
                 self.__password_entry.delete(0, "end")
+                
+
+

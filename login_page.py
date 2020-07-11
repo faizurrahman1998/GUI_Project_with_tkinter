@@ -2,7 +2,7 @@ from tkinter import messagebox
 import tkinter as tk
 from encryption import Encryption
 from info_page import InfoPage
-import time
+from sign_up import SignUP
 
 class LoginPage(tk.Canvas): 
 
@@ -41,6 +41,7 @@ class LoginPage(tk.Canvas):
             highlightcolor = "#f44336", highlightthickness = "2", 
             relief = "flat"
         )
+        self.__user_entry.bind("<Return>", lambda var: self.__password_entry.focus_set())
         self.__user_entry.place(relheight = .1, relwidth = .7, relx = 0.25, rely = 0.2)
 
         #password_enrty_box
@@ -61,6 +62,23 @@ class LoginPage(tk.Canvas):
         
         self.__password_entry.bind("<Return>", self.post_checking)
         self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
+
+
+        #sign_up_section
+        self.__messagelabel = tk.Label(
+            self, text = "Don't have an account?", font = ("comfortaa", 15), 
+            bg = self.__bg,
+            relief = "flat", anchor = "e"
+        )
+        self.__messagelabel.place(relwidth = 0.22, relheight = 0.05, relx = 0.65, rely = 0.92)
+
+        self.__button2 = tk.Button(
+            self, bd = 0, text = "Sign Up?", font = ("qualy", 15), 
+            bg = self.__bg, fg = "#1976D2", activebackground = "#2E4053", activeforeground = self.__bg, 
+            command = lambda : SignUP(self.main_page), 
+            relief = "flat"
+        )
+        self.__button2.place(relwidth = 0.1, relheight = 0.08, relx = 0.88, rely = 0.9)
 
 
     def post_checking(self, *kwargs): 

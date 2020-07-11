@@ -109,6 +109,7 @@ class InfoPage(tk.Canvas):
             command = lambda: self.load_page("login_page"), 
             relief = "groove"
         )
+        self.button1.bind("<Return>", lambda var: self.load_page("login_page"))
         self.button1.place(relwidth = 0.095, relheight = 0.06, relx = 0.9, rely = 0.935)
 
 

@@ -1,8 +1,10 @@
+from PIL import ImageTk, Image
 from tkinter import messagebox
-import tkinter as tk
 from encryption import Encryption
 from info_page import InfoPage
 from sign_up import SignUP
+import tkinter as tk
+import io
 
 class LoginPage(tk.Canvas): 
 
@@ -12,6 +14,7 @@ class LoginPage(tk.Canvas):
         self.parent = parent
         self.main_page = main_page
         self.credentials = self.main_page.connection.MechatronicsDB.Credentials
+        self.icons = self.main_page.connection.MechatronicsDB.Iconbase
         
         
         self.__bg = "#00FF96"
@@ -63,6 +66,20 @@ class LoginPage(tk.Canvas):
         self.__password_entry.bind("<Return>", lambda var: [self.__button1.focus_set(), self.active()])
         self.__password_entry.place(relheight = .1, relwidth = .9, relx = 0.05, rely = 0.49)
 
+        self.loaded_icons = {
+            "hide" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "hide"}).get("image"))).resize((45, 45), Image.ANTIALIAS)), 
+            "show" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "show"}).get("image"))).resize((45, 45), Image.ANTIALIAS))
+        }
+
+        #hide_and_seek_button
+        self.hide_n_seek = tk.Button(
+            self, image = self.loaded_icons.get("show"), 
+            bg = self.__bg, highlightbackground = self.__bg, activebackground = self.__bg, 
+            command = self.hide_and_seek, relief = "flat"
+        )
+        self.bind("<Button-1>", lambda var: self.active())
+        self.hide_n_seek.place(relwidth = 0.04, relheight = 0.08, relx = 0.905, rely = 0.5)
+
 
         #submit button
         self.__button1 = tk.Button(
@@ -109,11 +126,28 @@ class LoginPage(tk.Canvas):
 
             self.__labelPassword.configure(fg = self.highlightcolor)
             self.__password_entry.configure(bg = self.active_colour)
+            self.hide_n_seek.configure(bg = self.active_colour, activebackground = self.active_colour, highlightcolor = self.active_colour)
         
         else:
             self.__labelPassword.configure(fg = self.__fg)
             self.__password_entry.configure(bg = self.__bg)
+            self.hide_n_seek.configure(bg = self.__bg, activebackground = self.__bg, highlightcolor = self.__bg)
         
+        
+    def hide_and_seek(self):
+        
+        if self.__password_entry.cget("show") == "*" : 
+
+            self.__password_entry.configure(show = "")
+            self.hide_n_seek.configure(image = self.loaded_icons.get("hide"))
+
+        else: 
+
+            self.__password_entry.configure(show = "*")
+            self.hide_n_seek.configure(image = self.loaded_icons.get("show"))
+       
+
+
 
                 
 

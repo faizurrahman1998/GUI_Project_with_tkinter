@@ -3,6 +3,7 @@ from PIL import ImageTk, Image
 from shutil import copyfile
 from encryption import Encryption
 import tkinter as tk 
+import io
 
 class SignUP(tk.Toplevel): 
 
@@ -15,9 +16,12 @@ class SignUP(tk.Toplevel):
         self.entry_fg = "#E53935"
         self.highlightbackground = "#3498DB"
         self.highlightcolor = "#f44336"
+        self.icons = self.main_page.connection.MechatronicsDB.Iconbase
 
         self.image_locations = {
-            "no_image" : self.load_image("//home//fayezblank//Coding//PythonWorks//GUI_Project_with_tkinter//image_base//none.png")
+            "no_image" : self.load_image("//home//fayezblank//Coding//PythonWorks//GUI_Project_with_tkinter//image_base//none.png"), 
+            "hide" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "hide"}).get("image"))).resize((30, 30), Image.ANTIALIAS)), 
+            "show" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "show"}).get("image"))).resize((30, 30), Image.ANTIALIAS))
         }
 
         super().__init__()
@@ -217,7 +221,77 @@ class SignUP(tk.Toplevel):
         
         except:
             pass
+
     
+    def hide_and_seek(self, identifier):
+
+        if identifier == 1: 
+
+            if self.password_entry.cget("show") == "*":
+
+                self.password_entry.configure(show = "")
+                self.hide_n_seek1.configure(image = self.image_locations.get("hide"))
+            
+            else : 
+
+                self.password_entry.configure(show = "*")
+                self.hide_n_seek1.configure(image = self.image_locations.get("show"))
+        
+        else: 
+
+            if self.confirm_password_entry.cget("show") == "*":
+
+                self.confirm_password_entry.configure(show = "")
+                self.hide_n_seek2.configure(image = self.image_locations.get("hide"))
+            
+            else : 
+
+                self.confirm_password_entry.configure(show = "*")
+                self.hide_n_seek2.configure(image = self.image_locations.get("show"))
+    
+
+
+
+    def inner_check(self):
+        
+        if self.password_entry.get().rstrip() == self.confirm_password_entry.get().rstrip():
+            
+            self.cred_dict = {
+                "user_name" : self.user_name_entry.get().rstrip(), 
+                "password" : (self.checker.encrypt(self.password_entry.get().rstrip().encode())).decode()
+            }
+
+            if self.credentials.find_one({"user_name" : self.cred_dict.get("user_name").rstrip()}):
+                messagebox.showerror("Error", "User Name Already Exists.\nTo try a Different Username Press SUBMIT again.")
+                self.user_name_entry.delete(0, "end")
+        
+            else:
+
+                self.user_pass_window.destroy()
+
+                self.info_dict = {
+                    "user_name" : self.cred_dict.get("user_name"), 
+                    "info" : {
+                        "name" : self.name_entry.get().rstrip(), 
+                        "ID" : self.id_entry.get().rstrip(), 
+                        "email" : self.email_entry.get().rstrip(), 
+                        "image" : self.image_locations.get("new_location").rstrip()
+                    }
+                }
+
+                self.credentials.insert_one(self.cred_dict)
+                self.informations.insert_one(self.info_dict)
+
+                messagebox.showinfo("Congratulations", "Account Created")
+                self.destroy()
+
+        else: 
+
+            messagebox.showerror("Error", "Passwords don't match.")
+            self.password_entry.delete(0, "end")
+            self.confirm_password_entry.delete(0, "end")
+
+
     def post_checking(self):
 
         if len(self.id_entry.get().rstrip()) == 0 or len(self.name_entry.get().rstrip()) == 0 or len(self.email_entry.get().rstrip()) == 0 or (self.img_path_entry.get().rstrip())[1] == "N" or len(self.contact_entry.get()) == 0:
@@ -248,50 +322,106 @@ class SignUP(tk.Toplevel):
 
                                     self.informations = self.main_page.connection.MechatronicsDB.Informations
 
-                                    if (self.informations.find_one({"info.ID" : self.id_entry.get().rstrip()})) or self.informations.find_one(({"info.email": self.email_entry.get().rstrip()})):
-                                        
-                                        messagebox.showerror("Error", "ID or Email already exists.")
-                                
-                                    else:
+                                    try:
 
-                                        self.checker = Encryption()
-
-                                        self.credentials = self.main_page.connection.MechatronicsDB.Credentials
-
-                                        self.cred_dict = {
-                                            "user_name" : simpledialog.askstring("User Name", "Choose an user name: eg: nickname_roll (fayez_005)")
-                                        }
-                                        
-                                        if self.credentials.find_one({"user_name" : self.cred_dict.get("user_name").rstrip()}):
-                                            messagebox.showerror("Error", "User Name Already Exists.\nTo try a Different Username Press SUBMIT again.")
-                                        
+                                        if (self.informations.find_one({"info.ID" : self.id_entry.get().rstrip()})) or self.informations.find_one(({"info.email": self.email_entry.get().rstrip()})):
+                                            
+                                            messagebox.showerror("Error", "ID or Email already exists.")
+                                    
                                         else:
 
-                                            self.cred_dict.update({
-                                                "password" : self.checker.encrypt(simpledialog.askstring("Password", "Enter a password you never used before:").encode()).decode()
-                                            })
+                                            self.checker = Encryption()
 
-                                            self.info_dict = {
-                                                "user_name" : self.cred_dict.get("user_name"), 
-                                                "info" : {
-                                                    "name" : self.name_entry.get().rstrip(), 
-                                                    "ID" : self.id_entry.get().rstrip(), 
-                                                    "email" : self.email_entry.get().rstrip(), 
-                                                    "image" : self.image_locations.get("new_location").rstrip()
-                                                }
-                                            }
+                                            self.credentials = self.main_page.connection.MechatronicsDB.Credentials
 
-                                            self.credentials.insert_one(self.cred_dict)
-                                            self.informations.insert_one(self.info_dict)
+                                            self.user_pass_window = tk.Toplevel(bg = self.bg)
+                                            self.user_pass_window.title("Username and Password")
+                                            self.user_pass_window.geometry("800x500")
 
-                                            messagebox.showinfo("Congratulations", "Account Created")
-                                            
-                                            self.destroy()                                            
+
+                                            self.top_label = tk.Label(
+                                                self.user_pass_window, text = "Choose Username & Password", font = ("my font", 30), 
+                                                bg = self.bg, fg = "#3498DB", relief = "flat"
+                                            )
+                                            self.top_label.place(relwidth = 0.9, relheight = 0.1, relx = 0.05, rely = 0.03)
+
+
+
+                                            self.user_name_label = tk.Label(
+                                                self.user_pass_window, text = "Username", font = ("qualy", 20), 
+                                                bg = self.bg, fg = self.fg, relief = "flat", anchor = "w"
+                                            )
+                                            self.user_name_label.place(relwidth = 0.3, relheight = 0.09, relx = 0.05, rely = 0.15)
+
+                                            self.user_name_entry = tk.Entry(
+                                                self.user_pass_window, font = ("confortaa", 20), 
+                                                bg = self.bg, fg = self.fg, highlightbackground = self.highlightbackground, highlightcolor = self.highlightcolor, 
+                                                relief = "flat"
+                                            )
+                                            self.user_name_entry.bind("<Return>", lambda var: self.password_entry.focus_set())
+                                            self.user_name_entry.place(relwidth = 0.9, relheight = 0.09, relx = 0.05, rely = .25)
+
+
+                                            self.password_label = tk.Label(
+                                                self.user_pass_window, text = "Password", font = ("qualy", 20), 
+                                                bg = self.bg, fg = self.fg, relief = "flat", anchor = "w"
+                                            )
+                                            self.password_label.place(relwidth = 0.2, relheight = 0.09, relx = 0.05, rely = 0.36)
+
+                                            self.password_entry = tk.Entry(
+                                                self.user_pass_window, font = ("comfortaa", 20), 
+                                                bg = self.bg, fg = self.fg, highlightbackground = self.highlightbackground, highlightcolor = self.highlightcolor, 
+                                                show = "*", relief = "flat"
+                                            )
+                                            self.password_entry.bind("<Return>", lambda var: self.confirm_password_entry.focus_set())
+                                            self.password_entry.place(relwidth = 0.9, relheight = 0.09, relx = 0.05, rely = 0.46)
+
+                                            self.hide_n_seek1 = tk.Button(
+                                                self.user_pass_window, image = self.image_locations.get("show"), 
+                                                bg = self.bg, highlightbackground = self.bg, highlightcolor = self.bg, activebackground = self.bg,
+                                                command = lambda: self.hide_and_seek(1), relief = "flat"
+                                            )
+                                            self.hide_n_seek1.place(relwidth = 0.05, relheight = 0.075, relx = 0.895, rely = 0.468)
+
+
+
+                                            self.confirm_password_label = tk.Label(
+                                                self.user_pass_window, text = "Confirm Password", font = ("qualy", 20), 
+                                                bg = self.bg, fg = self.fg, relief = "flat", anchor = "w"
+                                            )
+                                            self.confirm_password_label.place(relwidth = 0.35, relheight = 0.09, relx = 0.05, rely = 0.56)
+
+                                            self.confirm_password_entry = tk.Entry(
+                                                self.user_pass_window, font = ("comfortaa", 20), 
+                                                bg = self.bg, fg = self.fg, highlightbackground = self.highlightbackground, highlightcolor = self.highlightcolor, 
+                                                show = "*", relief = "flat"
+                                            )
+                                            self.confirm_password_entry.place(relwidth = 0.9, relheight = 0.09, relx = 0.05, rely = 0.66)
+
+
+                                            self.hide_n_seek2 = tk.Button(
+                                                self.user_pass_window, image = self.image_locations.get("show"), 
+                                                bg = self.bg, highlightbackground = self.bg, highlightcolor = self.bg, activebackground = self.bg,
+                                                command = lambda: self.hide_and_seek(2), relief = "flat"
+                                            )
+                                            self.hide_n_seek2.place(relwidth = 0.05, relheight = 0.075, relx = 0.895, rely = 0.668)
+
+
+                                            self.done_button = tk.Button(
+                                                self.user_pass_window, text = "Confirm", font = ("skate brand", 20), 
+                                                bg = self.bg, fg = self.fg, activebackground = "#00FF96", activeforeground = self.bg, highlightbackground = "#FF5722",
+                                                command = lambda : [self.inner_check()], relief = "flat"
+                                            )                                     
+                                            self.done_button.place(relwidth = 0.15, relheight = .1, relx = 0.84, rely = 0.825)    
+
+                                    except ValueError:
+                                        pass
 
                                 else:
-                                    raise ValueError
 
-                            except ValueError:
+                                    raise IndexError
+
+                            except IndexError:
                                 messagebox.showerror("Error", "Email not acceptable.")  
                         
                         else:

@@ -15,53 +15,61 @@ class LoginPage(tk.Canvas):
         
         
         self.__bg = "#00FF96"
-        self.__fg = "#f44336"
+        self.__fg = "#1565C0"
+        self.highlightbackground = "#1976D2"
+        self.highlightcolor = "#f44336"
 
-        super().__init__(parent, bg = self.__bg, highlightbackground = "#f44336", highlightthickness = "2", relief = "flat") 
+        super().__init__(
+            parent, bg = self.__bg, highlightbackground = self.highlightbackground, highlightthickness = "2", highlightcolor = self.highlightcolor,
+            relief = "flat"
+        ) 
+
+        self.bind("<Button-1>", lambda var : [self.focus_set(), self.active()])
 
         #user_name Label
         self.__labelUser = tk.Label(
-            self, text = "User Name:", font = ("Qualy", 30), 
+            self, text = "User Name", font = ("Qualy", 30), 
             bg = self.__bg, fg = self.__fg, 
-            relief = "flat"
+            relief = "flat", anchor = "w"
         )
-        self.__labelUser.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.2)
+        self.__labelUser.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.15)
 
         #password_label
         self.__labelPassword = tk.Label(
-            self, text = "Password:", font = ("Qualy", 30), 
+            self, text = "Password", font = ("Qualy", 30), 
             bg = self.__bg, fg = self.__fg, 
-            relief = "flat"
+            relief = "flat", anchor = "w"
         )
-        self.__labelPassword.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.4)
+        self.__labelPassword.place(relwidth = 0.2, relheight = 0.1, relx = 0.05, rely = 0.38)
 
         #user_entry_box
         self.__user_entry = tk.Entry(
-            self, bd = 0, font = ("comfortaa", 30), 
-            highlightcolor = "#f44336", highlightthickness = "2", 
+            self, bd = 5, font = ("comfortaa", 30), 
+            bg = self.__bg, highlightbackground = self.highlightbackground, highlightthickness = "2", highlightcolor = self.highlightcolor,
             relief = "flat"
         )
-        self.__user_entry.bind("<Return>", lambda var: self.__password_entry.focus_set())
-        self.__user_entry.place(relheight = .1, relwidth = .7, relx = 0.25, rely = 0.2)
+        self.__user_entry.bind("<Button-1>", lambda var: [self.__user_entry.focus_set(), self.active()])
+        self.__user_entry.bind("<Return>", lambda var: [self.__password_entry.focus_set(), self.active()])
+        self.__user_entry.place(relheight = .1, relwidth = .9, relx = 0.05, rely = 0.26)
 
         #password_enrty_box
         self.__password_entry = tk.Entry(
             self, bd = 0, font = ("comfortaa", 30), show = "*",
-            highlightcolor = "#f44336", highlightthickness = "2", 
+            bg = self.__bg, highlightbackground = self.highlightbackground, highlightcolor = self.highlightcolor, highlightthickness = "2", 
             relief = "flat"
         )
-        self.__password_entry.place(relheight = .1, relwidth = .7, relx = 0.25, rely = 0.4)
+        self.__password_entry.bind("<Button-1>", lambda var: [self.__password_entry.focus_set(), self.active()])
+        self.__password_entry.bind("<Return>", lambda var: [self.__button1.focus_set(), self.active()])
+        self.__password_entry.place(relheight = .1, relwidth = .9, relx = 0.05, rely = 0.49)
 
 
         #submit button
         self.__button1 = tk.Button(
-            self, bd = 4, text = "Submit", font = ("Skate Brand", 30), 
-            bg =  self.__bg, fg = self.__fg, activebackground = "#4fc3f7", 
+            self, text = "Submit", font = ("Skate Brand", 25), 
+            bg =  self.__bg, fg = self.__fg, highlightbackground = "#FF5722", activebackground = self.__fg, activeforeground = self.__bg,
             command = self.post_checking,  relief = "groove"
         )
-        
-        self.__password_entry.bind("<Return>", self.post_checking)
-        self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .6)
+        self.__button1.place(relwidth = .2, relheight = 0.1, relx = .4, rely = .705)
 
 
         #sign_up_section
@@ -74,7 +82,7 @@ class LoginPage(tk.Canvas):
 
         self.__button2 = tk.Button(
             self, bd = 0, text = "Sign Up?", font = ("qualy", 15), 
-            bg = self.__bg, fg = "#1976D2", activebackground = "#2E4053", activeforeground = self.__bg, 
+            bg = self.__bg, fg = "#1976D2", activebackground = "#2E4053", activeforeground = self.__bg, highlightbackground = "#1976D2", 
             command = lambda : SignUP(self.main_page), 
             relief = "flat"
         )
@@ -89,28 +97,57 @@ class LoginPage(tk.Canvas):
 
         else:
             self.checker = Encryption()
+
+            try:
             
-            if self.__user_entry.get().rstrip() == self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("user_name"): 
+                if self.__user_entry.get().rstrip() == self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("user_name"): 
 
-                if self.__password_entry.get() == self.checker.decrypt(self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("password").encode()).decode():
+                    if self.__password_entry.get() == self.checker.decrypt(self.credentials.find_one({"user_name" : self.__user_entry.get().rstrip()}).get("password").encode()).decode():
 
-                    messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())       
+                        messagebox.showinfo("WELCOME!", (self.__user_entry.get().split("_")[0]).title())       
 
-                    self.main_page.canvases.update({"info_page": InfoPage(self.main_page.interface, self.main_page, self.__user_entry.get())})
+                        self.main_page.canvases.update({"info_page": InfoPage(self.main_page.interface, self.main_page, self.__user_entry.get())})
 
-                    self.destroy()
-                    self.__init__(self.parent, self.main_page)
+                        self.destroy()
+                        self.__init__(self.parent, self.main_page)
 
-                    self.main_page.show_canvas("info_page")
-                
+                        self.main_page.show_canvas("info_page")
+                    
+                    else: 
+
+                        messagebox.showerror("Error!", "Incorrect Password!\nCheck for white space at the end!!")
+                    
                 else: 
 
-                    messagebox.showerror("Error!", "Incorrect Password!\nCheck for white space at the end!!")
+                    messagebox.showerror("Error!", "No user found.\nCheck user name.")
+                    self.__password_entry.delete(0, "end")
+            
+            except:
                 
-            else: 
+                messagebox.showerror("Error", "Username doesn't exist.")
 
-                messagebox.showerror("Error!", "No user found.\nCheck user name.")
-                self.__password_entry.delete(0, "end")
+    
+    def active(self):
+
+        self.active_colour = "#42A5F5"
+
+        if str(self.focus_get()) == ".!frame.!loginpage2.!entry":
+            self.__labelUser.configure(fg = self.highlightcolor)
+            self.__user_entry.configure(bg = self.active_colour)
+        
+        else:
+            self.__labelUser.configure(fg = self.__fg)
+            self.__user_entry.configure(bg = self.__bg)
+
+
+        if str(self.focus_get()) == ".!frame.!loginpage2.!entry2":
+            self.__labelPassword.configure(fg = self.highlightcolor)
+            self.__password_entry.configure(bg = self.active_colour)
+        
+        else:
+            self.__labelPassword.configure(fg = self.__fg)
+            self.__password_entry.configure(bg = self.__bg)
+
                 
 
 

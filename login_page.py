@@ -18,6 +18,7 @@ class LoginPage(tk.Canvas):
         self.__fg = "#1565C0"
         self.highlightbackground = "#1976D2"
         self.highlightcolor = "#f44336"
+        self.active_colour = "#42A5F5"
 
         super().__init__(
             parent, bg = self.__bg, highlightbackground = self.highlightbackground, highlightthickness = "2", highlightcolor = self.highlightcolor,
@@ -88,6 +89,33 @@ class LoginPage(tk.Canvas):
         )
         self.__button2.place(relwidth = 0.1, relheight = 0.08, relx = 0.88, rely = 0.9)
 
+    
+    
+    def active(self):
+
+        self.frame_name = str(self.focus_get()).rsplit("!", 1)[0]
+
+        if str(self.focus_get()) == f"{self.frame_name}!entry":
+
+            self.__labelUser.configure(fg = self.highlightcolor)
+            self.__user_entry.configure(bg = self.active_colour)
+        
+        else:
+            self.__labelUser.configure(fg = self.__fg)
+            self.__user_entry.configure(bg = self.__bg)
+
+
+        if str(self.focus_get()) == f"{self.frame_name}!entry2":
+
+            self.__labelPassword.configure(fg = self.highlightcolor)
+            self.__password_entry.configure(bg = self.active_colour)
+        
+        else:
+            self.__labelPassword.configure(fg = self.__fg)
+            self.__password_entry.configure(bg = self.__bg)
+        
+
+                
 
     def post_checking(self, *kwargs): 
 
@@ -125,29 +153,3 @@ class LoginPage(tk.Canvas):
             except:
                 
                 messagebox.showerror("Error", "Username doesn't exist.")
-
-    
-    def active(self):
-
-        self.active_colour = "#42A5F5"
-
-        if str(self.focus_get()) == ".!frame.!loginpage2.!entry":
-            self.__labelUser.configure(fg = self.highlightcolor)
-            self.__user_entry.configure(bg = self.active_colour)
-        
-        else:
-            self.__labelUser.configure(fg = self.__fg)
-            self.__user_entry.configure(bg = self.__bg)
-
-
-        if str(self.focus_get()) == ".!frame.!loginpage2.!entry2":
-            self.__labelPassword.configure(fg = self.highlightcolor)
-            self.__password_entry.configure(bg = self.active_colour)
-        
-        else:
-            self.__labelPassword.configure(fg = self.__fg)
-            self.__password_entry.configure(bg = self.__bg)
-
-                
-
-

@@ -2,7 +2,9 @@ from tkinter import messagebox, filedialog, simpledialog
 from PIL import ImageTk, Image
 from shutil import copyfile
 from encryption import Encryption
+import face_recognition
 import tkinter as tk 
+import os
 import io
 
 class SignUP(tk.Toplevel): 
@@ -10,6 +12,10 @@ class SignUP(tk.Toplevel):
     def __init__(self, main_page):
 
         self.main_page = main_page
+        self.credentials = self.main_page.connection.MechatronicsDB.Credentials
+        self.informations = self.main_page.connection.MechatronicsDB.Informations  
+        self.encoding_col = self.main_page.connection.MechatronicsDB.Face_encodings  
+
 
         self.bg = "#2E4053"
         self.fg = "#2ECC71"
@@ -199,26 +205,69 @@ class SignUP(tk.Toplevel):
     def load_image(self, path): 
 
         return ImageTk.PhotoImage(Image.open(path).resize((220, 200), Image.ANTIALIAS))
+
+    
+    def find_match(self):
+        
+        for encoding in self.encoding_col.find() :
+
+            if face_recognition.compare_faces([encoding.get("face_encoding")], self.image_encoding, tolerance=0.4)[0]:
+
+                print("match found")
+                self.image_locations.update({
+                    "added_image_re" : ImageTk.PhotoImage(Image.open(self.image_location).resize((380, 350), Image.ANTIALIAS))
+                })
+                
+                self.match_window = tk.Toplevel(bg = self.bg)
+                self.match_window.title("Match found")
+                self.match_window.geometry("500x600")
+
+    
+                self.added_image_label = tk.Label(
+                    self.match_window, image = self.image_locations.get("added_image_re"), 
+                    bg = self.bg, 
+                    relief = "flat"
+                )
+                self.added_image_label.place(relwidth = .75, relheight = 0.55, relx = 0.125, rely = 0.02)
+
+                self.matched_image_label = tk.Label(
+                    self.match_window, text = "This person is\nalready an User.\nPhoto will be\nRemoved.", font = ("qualy", 25), 
+                    bg = self.bg, fg = "#f44336", 
+                    relief = "flat", 
+                )
+                self.matched_image_label.place(relwidth = .9, relheight = 0.35, relx = 0.05, rely = 0.54)
+
+                self.ok_button = tk.Button(
+                    self.match_window, bd = 0, text = "OK", font = ("quantum", 20), 
+                    bg = self.bg, fg = self.fg, activebackground = self.fg, activeforeground = self.bg, highlightcolor = self.highlightbackground, highlightbackground = self.highlightbackground,
+                    command = lambda var: [self.image_holder.configure(image = self.image_locations.get("no_image")), self.match_window.destroy()] , relief = "flat"
+                )
+                self.ok_button.place(relwidth = 0.2, relheight = 0.08, relx = .4, rely = .9)
+                
+ 
     
 
     def add_image(self):
 
         try:
 
-            image_location = filedialog.askopenfile(
+            self.image_location = filedialog.askopenfile(
                 initialdir = "//home//fayezblank//Downloads", title = "Add an Image", 
-                filetypes = (("jpg files", "*.jpg"), ("png files", "*.png"))
+                filetypes = (("png files", "*.png"), ("jpg files", "*.jpg"))
             ).name.replace("/", "//")
 
             self.image_locations.update({
-                "added_image" : self.load_image(image_location), 
-                "new_location" : "".join(("", "/home/fayezblank/Coding/PythonWorks/GUI_Project_with_tkinter/image_base/".replace("/", "//"), image_location.split("//")[-1]))
+                "added_image" : self.load_image(self.image_location), 
+                "new_location" : "".join(("", f"{os.getcwd()}/image_base/".replace("/", "//"), self.image_location.split("//")[-1]))
             })
-            self.img_path_entry.configure(text = tk.StringVar(self.interface, image_location))
+            
+            self.img_path_entry.configure(text = tk.StringVar(self.interface, self.image_location))
             self.image_holder.configure(image = self.image_locations.get("added_image"))
 
-            copyfile(image_location, self.image_locations.get("new_location"))
-        
+            self.image_encoding = face_recognition.face_encodings(face_recognition.load_image_file(self.image_location))[0]    
+            self.find_match()
+                     
+
         except:
             pass
 
@@ -281,6 +330,7 @@ class SignUP(tk.Toplevel):
 
                 self.credentials.insert_one(self.cred_dict)
                 self.informations.insert_one(self.info_dict)
+                copyfile(self.image_location, self.image_locations.get("new_location"))
 
                 messagebox.showinfo("Congratulations", "Account Created")
                 self.destroy()
@@ -320,8 +370,6 @@ class SignUP(tk.Toplevel):
 
                                 if self.email_entry.get().rstrip().split("@", 1)[1] in self.email_domains:
 
-                                    self.informations = self.main_page.connection.MechatronicsDB.Informations
-
                                     try:
 
                                         if (self.informations.find_one({"info.ID" : self.id_entry.get().rstrip()})) or self.informations.find_one(({"info.email": self.email_entry.get().rstrip()})):
@@ -331,8 +379,6 @@ class SignUP(tk.Toplevel):
                                         else:
 
                                             self.checker = Encryption()
-
-                                            self.credentials = self.main_page.connection.MechatronicsDB.Credentials
 
                                             self.user_pass_window = tk.Toplevel(bg = self.bg)
                                             self.user_pass_window.title("Username and Password")

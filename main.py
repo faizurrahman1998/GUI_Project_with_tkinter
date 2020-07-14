@@ -1,14 +1,16 @@
-import tkinter as tk 
 from PIL import ImageTk, Image
 from encryption import Connection
 from login_page import LoginPage
 from info_page import InfoPage
+import tkinter as tk 
+import os 
 
 class AppEngine(tk.Tk): 
 
     def __init__(self): 
 
         self.connection = Connection("mongodb://localhost:27017")
+        self.path = os.getcwd()
 
         super().__init__()
         self.title("MTE")

@@ -1,6 +1,7 @@
 from encryption import Encryption
 from PIL import ImageTk, Image
 import tkinter as tk 
+import os
 
 class InfoPage(tk.Canvas): 
 
@@ -20,7 +21,7 @@ class InfoPage(tk.Canvas):
 
         #image_path_reference 
         self.images = {
-            "user_image" : self.load_image(self.informations.find_one({"user_name" : self.user_name}).get("info").get("image"))
+            "user_image" : self.load_image(f"{os.getcwd().replace('/', '//')}{self.informations.find_one({'user_name' : self.user_name}).get('info').get('image')}")
         }
 
         #for holding the user_image

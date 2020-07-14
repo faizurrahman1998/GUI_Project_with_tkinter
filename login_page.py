@@ -5,6 +5,7 @@ from info_page import InfoPage
 from sign_up import SignUP
 import tkinter as tk
 import io
+import os
 
 class LoginPage(tk.Canvas): 
 
@@ -13,21 +14,24 @@ class LoginPage(tk.Canvas):
         #for recreating after destroying and using outside the namspace of __init__() if needed
         self.parent = parent
         self.main_page = main_page
+
+        #connections to database
         self.credentials = self.main_page.connection.MechatronicsDB.Credentials
         self.icons = self.main_page.connection.MechatronicsDB.Iconbase
         
-        
+
+        #colors
         self.__bg = "#00FF96"
         self.__fg = "#1565C0"
         self.highlightbackground = "#1976D2"
         self.highlightcolor = "#f44336"
         self.active_colour = "#42A5F5"
 
+        #canvas initialization
         super().__init__(
             parent, bg = self.__bg, highlightbackground = self.highlightbackground, highlightthickness = "2", highlightcolor = self.highlightcolor,
             relief = "flat"
         ) 
-
         self.bind("<Button-1>", lambda var : [self.focus_set(), self.active()])
 
         #user_name Label
@@ -73,8 +77,8 @@ class LoginPage(tk.Canvas):
 
         #hide_and_seek_button
         self.hide_n_seek = tk.Button(
-            self, image = self.loaded_icons.get("show"), 
-            bg = self.__bg, highlightbackground = self.__bg, activebackground = self.__bg, 
+            self, bd = 0, image = self.loaded_icons.get("show"), 
+            bg = self.__bg, highlightbackground = self.__bg, activebackground = self.__bg, highlightcolor = self.__bg,
             command = self.hide_and_seek, relief = "flat"
         )
         self.bind("<Button-1>", lambda var: self.active())
@@ -126,7 +130,7 @@ class LoginPage(tk.Canvas):
 
             self.__labelPassword.configure(fg = self.highlightcolor)
             self.__password_entry.configure(bg = self.active_colour)
-            self.hide_n_seek.configure(bg = self.active_colour, activebackground = self.active_colour, highlightcolor = self.active_colour)
+            self.hide_n_seek.configure(bg = self.active_colour, activebackground = self.active_colour, highlightbackground = self.active_colour)
         
         else:
             self.__labelPassword.configure(fg = self.__fg)
@@ -146,10 +150,6 @@ class LoginPage(tk.Canvas):
             self.__password_entry.configure(show = "*")
             self.hide_n_seek.configure(image = self.loaded_icons.get("show"))
        
-
-
-
-                
 
     def post_checking(self, *kwargs): 
 
@@ -184,6 +184,6 @@ class LoginPage(tk.Canvas):
                     messagebox.showerror("Error!", "No user found.\nCheck user name.")
                     self.__password_entry.delete(0, "end")
             
-            except:
+            except AttributeError:
                 
                 messagebox.showerror("Error", "Username doesn't exist.")

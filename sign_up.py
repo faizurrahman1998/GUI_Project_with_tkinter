@@ -12,20 +12,24 @@ class SignUP(tk.Toplevel):
     def __init__(self, main_page):
 
         self.main_page = main_page
+
+        #database connection
         self.credentials = self.main_page.connection.MechatronicsDB.Credentials
         self.informations = self.main_page.connection.MechatronicsDB.Informations  
         self.encoding_col = self.main_page.connection.MechatronicsDB.Face_encodings  
+        self.icons = self.main_page.connection.MechatronicsDB.Iconbase
 
 
+        #colours
         self.bg = "#2E4053"
         self.fg = "#2ECC71"
         self.entry_fg = "#E53935"
         self.highlightbackground = "#3498DB"
         self.highlightcolor = "#f44336"
-        self.icons = self.main_page.connection.MechatronicsDB.Iconbase
+        
 
         self.image_locations = {
-            "no_image" : self.load_image("//home//fayezblank//Coding//PythonWorks//GUI_Project_with_tkinter//image_base//none.png"), 
+            "no_image" : self.load_image(f"{os.getcwd().replace('/', '//')}//image_base//none.png"), 
             "hide" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "hide"}).get("image"))).resize((30, 30), Image.ANTIALIAS)), 
             "show" : ImageTk.PhotoImage(Image.open(io.BytesIO(self.icons.find_one({"_id" : "show"}).get("image"))).resize((30, 30), Image.ANTIALIAS))
         }
@@ -191,14 +195,14 @@ class SignUP(tk.Toplevel):
             self.image_label.configure(fg = self.fg)
             self.img_path_entry.configure(readonlybackground = self.bg, fg = self.fg)
 
-        #entry 4
+        #entry 5
         if str(self.focus_get()) == ".!signup.!canvas.!entry5":
             self.contact_label.configure(fg = "#f44336")
-            self.contact_entry.configure(readonlybackground = self.active_color, fg = self.entry_fg)
+            self.contact_entry.configure(bg = self.active_color, fg = self.entry_fg)
         
         else: 
             self.contact_label.configure(fg = self.fg)
-            self.contact_entry.configure(readonlybackground = self.bg, fg = self.fg)
+            self.contact_entry.configure(bg = self.bg, fg = self.fg)
 
 
 
@@ -213,7 +217,6 @@ class SignUP(tk.Toplevel):
 
             if face_recognition.compare_faces([encoding.get("face_encoding")], self.image_encoding, tolerance=0.4)[0]:
 
-                print("match found")
                 self.image_locations.update({
                     "added_image_re" : ImageTk.PhotoImage(Image.open(self.image_location).resize((380, 350), Image.ANTIALIAS))
                 })
@@ -240,7 +243,7 @@ class SignUP(tk.Toplevel):
                 self.ok_button = tk.Button(
                     self.match_window, bd = 0, text = "OK", font = ("quantum", 20), 
                     bg = self.bg, fg = self.fg, activebackground = self.fg, activeforeground = self.bg, highlightcolor = self.highlightbackground, highlightbackground = self.highlightbackground,
-                    command = lambda var: [self.image_holder.configure(image = self.image_locations.get("no_image")), self.match_window.destroy()] , relief = "flat"
+                    command = lambda : [self.img_path_entry.configure(text = tk.StringVar(self.interface, "Image Removed. Click to add another Image.")) ,self.image_holder.configure(image = self.image_locations.get("no_image")), self.match_window.destroy()] , relief = "flat"
                 )
                 self.ok_button.place(relwidth = 0.2, relheight = 0.08, relx = .4, rely = .9)
                 
@@ -252,13 +255,13 @@ class SignUP(tk.Toplevel):
         try:
 
             self.image_location = filedialog.askopenfile(
-                initialdir = "//home//fayezblank//Downloads", title = "Add an Image", 
+                initialdir = os.getcwd(), title = "Add an Image", 
                 filetypes = (("png files", "*.png"), ("jpg files", "*.jpg"))
             ).name.replace("/", "//")
 
             self.image_locations.update({
                 "added_image" : self.load_image(self.image_location), 
-                "new_location" : "".join(("", f"{os.getcwd()}/image_base/".replace("/", "//"), self.image_location.split("//")[-1]))
+                "new_location" : "".join(("", "/image_base/".replace("/", "//"), self.image_location.split("//")[-1]))
             })
             
             self.img_path_entry.configure(text = tk.StringVar(self.interface, self.image_location))
@@ -268,7 +271,7 @@ class SignUP(tk.Toplevel):
             self.find_match()
                      
 
-        except:
+        except AttributeError:
             pass
 
     
@@ -303,7 +306,7 @@ class SignUP(tk.Toplevel):
 
     def inner_check(self):
         
-        if self.password_entry.get().rstrip() == self.confirm_password_entry.get().rstrip():
+        if (self.password_entry.get().rstrip() == self.confirm_password_entry.get().rstrip()) or len(self.password_entry.get().rstrip()) or len(self.confirm_password_entry.get().rstrip()):
             
             self.cred_dict = {
                 "user_name" : self.user_name_entry.get().rstrip(), 
@@ -311,7 +314,7 @@ class SignUP(tk.Toplevel):
             }
 
             if self.credentials.find_one({"user_name" : self.cred_dict.get("user_name").rstrip()}):
-                messagebox.showerror("Error", "User Name Already Exists.\nTo try a Different Username Press SUBMIT again.")
+                messagebox.showerror("Error", "User Name Already Exists.\nTo try a Different Username.")
                 self.user_name_entry.delete(0, "end")
         
             else:
@@ -321,16 +324,21 @@ class SignUP(tk.Toplevel):
                 self.info_dict = {
                     "user_name" : self.cred_dict.get("user_name"), 
                     "info" : {
-                        "name" : self.name_entry.get().rstrip(), 
-                        "ID" : self.id_entry.get().rstrip(), 
+                        "name" : self.name_entry.get(), 
+                        "ID" : self.id_entry.get(), 
                         "email" : self.email_entry.get().rstrip(), 
-                        "image" : self.image_locations.get("new_location").rstrip()
+                        "image" : self.image_locations.get("new_location").rstrip(),
+                        "phone" : self.contact_entry.get().rstrip()
                     }
                 }
 
                 self.credentials.insert_one(self.cred_dict)
                 self.informations.insert_one(self.info_dict)
-                copyfile(self.image_location, self.image_locations.get("new_location"))
+                self.encoding_col.insert_one({
+                    "_id" : self.cred_dict.get("user_name"), 
+                    "face_encoding" : list(self.image_encoding)
+                })
+                copyfile(self.image_location, f"{os.getcwd().replace('/', '//')}{self.image_locations.get('new_location')}")
 
                 messagebox.showinfo("Congratulations", "Account Created")
                 self.destroy()
@@ -482,11 +490,3 @@ class SignUP(tk.Toplevel):
             except ValueError:
                 messagebox.showerror("Error", "Enter Valid Phone Number.")
 
-        
-
-
-# interface = tk.Tk()
-
-# obj = SignUP("main_page")
-
-# interface.mainloop()
